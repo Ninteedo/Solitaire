@@ -28,53 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlTableaus = new System.Windows.Forms.Panel();
-            this.pnlFoundations = new System.Windows.Forms.Panel();
+            this.tblLayout = new System.Windows.Forms.TableLayoutPanel();
             this.tblScoring = new System.Windows.Forms.TableLayoutPanel();
             this.lblTimer = new System.Windows.Forms.Label();
             this.lblScore = new System.Windows.Forms.Label();
             this.lblMoves = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.pnlTableaus = new System.Windows.Forms.Panel();
+            this.tblLayout.SuspendLayout();
             this.tblScoring.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tableLayoutPanel1
+            // tblLayout
             // 
-            this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.Controls.Add(this.pnlTableaus, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.pnlFoundations, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.tblScoring, 1, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1578, 844);
-            this.tableLayoutPanel1.TabIndex = 0;
-            // 
-            // pnlTableaus
-            // 
-            this.pnlTableaus.BackColor = System.Drawing.Color.ForestGreen;
-            this.pnlTableaus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlTableaus.Location = new System.Drawing.Point(318, 45);
-            this.pnlTableaus.Name = "pnlTableaus";
-            this.pnlTableaus.Size = new System.Drawing.Size(940, 595);
-            this.pnlTableaus.TabIndex = 0;
-            // 
-            // pnlFoundations
-            // 
-            this.pnlFoundations.BackColor = System.Drawing.Color.ForestGreen;
-            this.pnlFoundations.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlFoundations.Location = new System.Drawing.Point(1264, 45);
-            this.pnlFoundations.Name = "pnlFoundations";
-            this.pnlFoundations.Size = new System.Drawing.Size(311, 595);
-            this.pnlFoundations.TabIndex = 1;
+            this.tblLayout.ColumnCount = 3;
+            this.tblLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tblLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
+            this.tblLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tblLayout.Controls.Add(this.pnlTableaus, 0, 1);
+            this.tblLayout.Controls.Add(this.tblScoring, 1, 0);
+            this.tblLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tblLayout.Location = new System.Drawing.Point(0, 0);
+            this.tblLayout.Name = "tblLayout";
+            this.tblLayout.RowCount = 3;
+            this.tblLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tblLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
+            this.tblLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tblLayout.Size = new System.Drawing.Size(1578, 844);
+            this.tblLayout.TabIndex = 0;
             // 
             // tblScoring
             // 
@@ -132,16 +112,26 @@
             this.lblMoves.Text = "Moves: 0";
             this.lblMoves.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // pnlTableaus
+            // 
+            this.pnlTableaus.BackColor = System.Drawing.Color.ForestGreen;
+            this.tblLayout.SetColumnSpan(this.pnlTableaus, 3);
+            this.pnlTableaus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTableaus.Location = new System.Drawing.Point(3, 45);
+            this.pnlTableaus.Name = "pnlTableaus";
+            this.pnlTableaus.Size = new System.Drawing.Size(1572, 595);
+            this.pnlTableaus.TabIndex = 0;
+            // 
             // FormGame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Green;
             this.ClientSize = new System.Drawing.Size(1578, 844);
-            this.Controls.Add(this.tableLayoutPanel1);
+            this.Controls.Add(this.tblLayout);
             this.Name = "FormGame";
             this.Text = "FormGame";
-            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tblLayout.ResumeLayout(false);
             this.tblScoring.ResumeLayout(false);
             this.tblScoring.PerformLayout();
             this.ResumeLayout(false);
@@ -150,13 +140,12 @@
 
         #endregion
 
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Panel pnlTableaus;
-        private System.Windows.Forms.Panel pnlFoundations;
+        private System.Windows.Forms.TableLayoutPanel tblLayout;
         private System.Windows.Forms.TableLayoutPanel tblScoring;
         private System.Windows.Forms.Label lblTimer;
         private System.Windows.Forms.Label lblScore;
         private System.Windows.Forms.Label lblMoves;
+        private System.Windows.Forms.Panel pnlTableaus;
     }
 }
 

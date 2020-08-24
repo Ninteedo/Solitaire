@@ -22,11 +22,6 @@ namespace Solitaire
             UpdateDisplayImage();
         }
 
-        protected override void OnPaint(PaintEventArgs pe)
-        {
-            base.OnPaint(pe);
-        }
-
         private readonly Card _myCard;
 
         private void CardFaceUpToggled(object sender, EventArgs e)

@@ -76,6 +76,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -89,6 +90,165 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\2C.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\2D.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\2H.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\2S.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\3C.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\3D.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\3H.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\3S.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\4C.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\4D.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\4H.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\4S.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\5C.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\5D.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\5H.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\5S.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\6C.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\6D.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\6H.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\6S.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\7C.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\7D.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\7H.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\7S.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\8C.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\8D.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\8H.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\8S.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\9C.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\9D.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\9H.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\9S.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\10C.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\10D.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\10H.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\10S.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\AC.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\AD.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\AH.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\AS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\JC.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\JD.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\JH.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\JS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\KC.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\KD.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\KH.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\KS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\QC.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\QD.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\QH.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\QS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\blank.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

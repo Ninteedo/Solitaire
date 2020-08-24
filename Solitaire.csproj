@@ -48,11 +48,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Card.cs">
+    <Compile Include="Card.cs" />
+    <Compile Include="CardPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Card.Designer.cs">
-      <DependentUpon>Card.cs</DependentUpon>
+    <Compile Include="CardPanel.Designer.cs">
+      <DependentUpon>CardPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="FormGame.cs">
       <SubType>Form</SubType>

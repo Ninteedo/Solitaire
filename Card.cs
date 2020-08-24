@@ -5,30 +5,30 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Solitaire.Properties;
 
 namespace Solitaire
 {
-    public partial class Card : Component
+    public class Card
     {
         #region Constructors
 
         public Card(int value, Suites suite)
         {
-            InitializeComponent();
-
             _value = value;
             _suite = suite;
         }
 
-        public Card(IContainer container)
-        {
-            container.Add(this);
+        //public Card(IContainer container)
+        //{
+        //    container.Add(this);
 
-            InitializeComponent();
-        }
+        //    InitializeComponent();
+        //}
 
         #endregion
 
@@ -84,16 +84,18 @@ namespace Solitaire
             }
         }
 
+        public event EventHandler FaceUpToggled;
+
         public void SetFaceUp()
         {
             _isFaceDown = false;
-            panel1.BackgroundImage = _frontImage;
+            FaceUpToggled(this, null);
         }
 
         public void SetFaceDown()
         {
             _isFaceDown = true;
-            panel1.BackgroundImage = _backImage;
+            FaceUpToggled(this, null);
         }
 
         #endregion
@@ -102,6 +104,22 @@ namespace Solitaire
 
         private Image _frontImage;
         private Image _backImage;
+
+        /// <summary>
+        /// Returns the image which currently represents the card, dependent on whether card is face down.
+        /// </summary>
+        /// <returns></returns>
+        public Image GetDisplayImage()
+        {
+            if (_isFaceDown)
+            {
+                return _backImage;
+            }
+            else
+            {
+                return _frontImage;
+            }
+        }
 
         private void GetFrontImage()
         {

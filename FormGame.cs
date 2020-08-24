@@ -8,13 +8,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+#nullable enable
+
 namespace Solitaire
 {
-    public partial class Form1 : Form
+    public partial class FormGame : Form
     {
-        public Form1()
+        public FormGame()
         {
             InitializeComponent();
         }
+
+        #region "User Interface"
+
+        
+
+        #endregion
     }
 }

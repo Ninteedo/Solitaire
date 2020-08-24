@@ -189,7 +189,7 @@ namespace Solitaire
 
             if (ValidCardValue)
             {
-                return valueNames[_value] + suiteNames[(int) _suite] + ".png";
+                return valueNames[_value] + suiteNames[(int) _suite];
             }
             else
             {

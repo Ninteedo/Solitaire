@@ -21,18 +21,60 @@ namespace Solitaire
         {
             _value = value;
             _suite = suite;
+
+            GetFrontImage();
+            GetBackImage();
         }
-
-        //public Card(IContainer container)
-        //{
-        //    container.Add(this);
-
-        //    InitializeComponent();
-        //}
 
         #endregion
 
         #region "Card Variables"
+
+        #region "Locations"
+
+        public enum Location
+        {
+            Stock,
+            Waste,
+            Tableau,
+            Foundation
+        }
+
+        private Location _location;
+        private int _height;
+        private int _row;
+        private int _column;
+
+        public void SetLocation(Location newLocation, int height = 0, int row = 0, int column = 0)
+        {
+            _location = newLocation;
+            _height = height;
+            _row = row;
+            _column = column;
+        }
+
+        public Location GetLocation()
+        {
+            return _location;
+        }
+
+        public int GetHeight()
+        {
+            return _height;
+        }
+
+        public int GetRow()
+        {
+            return _row;
+        }
+
+        public int GetColumn()
+        {
+            return _column;
+        }
+
+
+        #endregion
 
         private readonly int _value;
         private readonly Suites _suite;

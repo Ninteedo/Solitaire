@@ -18,11 +18,17 @@ namespace Solitaire
 
             _myCard = myCard;
             myCard.FaceUpToggled += CardFaceUpToggled;
+            myCard.LocationChanged += CardLocationChanged;
 
             UpdateDisplayImage();
         }
 
         private readonly Card _myCard;
+
+        public Card GetCard()
+        {
+            return _myCard;
+        }
 
         private void CardFaceUpToggled(object sender, EventArgs e)
         {
@@ -32,6 +38,13 @@ namespace Solitaire
         private void UpdateDisplayImage()
         {
             BackgroundImage = _myCard.GetDisplayImage();
+        }
+
+        public EventHandler UpdateLocation;
+
+        private void CardLocationChanged(object sender, EventArgs e)
+        {
+            UpdateLocation(this, null);
         }
     }
 }

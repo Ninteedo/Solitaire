@@ -29,11 +29,12 @@
         private void InitializeComponent()
         {
             this.tblLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.pnlPlayArea = new System.Windows.Forms.Panel();
             this.tblScoring = new System.Windows.Forms.TableLayoutPanel();
-            this.lblTimer = new System.Windows.Forms.Label();
-            this.lblScore = new System.Windows.Forms.Label();
             this.lblMoves = new System.Windows.Forms.Label();
-            this.pnlTableaus = new System.Windows.Forms.Panel();
+            this.lblScore = new System.Windows.Forms.Label();
+            this.lblTimer = new System.Windows.Forms.Label();
+            this.btnStart = new System.Windows.Forms.Button();
             this.tblLayout.SuspendLayout();
             this.tblScoring.SuspendLayout();
             this.SuspendLayout();
@@ -44,8 +45,9 @@
             this.tblLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tblLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
             this.tblLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tblLayout.Controls.Add(this.pnlTableaus, 0, 1);
+            this.tblLayout.Controls.Add(this.pnlPlayArea, 0, 1);
             this.tblLayout.Controls.Add(this.tblScoring, 1, 0);
+            this.tblLayout.Controls.Add(this.btnStart, 0, 0);
             this.tblLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tblLayout.Location = new System.Drawing.Point(0, 0);
             this.tblLayout.Name = "tblLayout";
@@ -55,6 +57,16 @@
             this.tblLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tblLayout.Size = new System.Drawing.Size(1578, 844);
             this.tblLayout.TabIndex = 0;
+            // 
+            // pnlPlayArea
+            // 
+            this.pnlPlayArea.BackColor = System.Drawing.Color.ForestGreen;
+            this.tblLayout.SetColumnSpan(this.pnlPlayArea, 3);
+            this.pnlPlayArea.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlPlayArea.Location = new System.Drawing.Point(3, 45);
+            this.pnlPlayArea.Name = "pnlPlayArea";
+            this.pnlPlayArea.Size = new System.Drawing.Size(1572, 595);
+            this.pnlPlayArea.TabIndex = 0;
             // 
             // tblScoring
             // 
@@ -73,18 +85,18 @@
             this.tblScoring.Size = new System.Drawing.Size(940, 36);
             this.tblScoring.TabIndex = 2;
             // 
-            // lblTimer
+            // lblMoves
             // 
-            this.lblTimer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblMoves.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblTimer.AutoSize = true;
-            this.lblTimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTimer.Location = new System.Drawing.Point(3, 0);
-            this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(307, 32);
-            this.lblTimer.TabIndex = 0;
-            this.lblTimer.Text = "0:00:00";
-            this.lblTimer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblMoves.AutoSize = true;
+            this.lblMoves.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMoves.Location = new System.Drawing.Point(629, 0);
+            this.lblMoves.Name = "lblMoves";
+            this.lblMoves.Size = new System.Drawing.Size(308, 32);
+            this.lblMoves.TabIndex = 2;
+            this.lblMoves.Text = "Moves: 0";
+            this.lblMoves.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblScore
             // 
@@ -99,28 +111,29 @@
             this.lblScore.Text = "Score: 0";
             this.lblScore.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lblMoves
+            // lblTimer
             // 
-            this.lblMoves.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblTimer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblMoves.AutoSize = true;
-            this.lblMoves.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMoves.Location = new System.Drawing.Point(629, 0);
-            this.lblMoves.Name = "lblMoves";
-            this.lblMoves.Size = new System.Drawing.Size(308, 32);
-            this.lblMoves.TabIndex = 2;
-            this.lblMoves.Text = "Moves: 0";
-            this.lblMoves.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTimer.AutoSize = true;
+            this.lblTimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTimer.Location = new System.Drawing.Point(3, 0);
+            this.lblTimer.Name = "lblTimer";
+            this.lblTimer.Size = new System.Drawing.Size(307, 32);
+            this.lblTimer.TabIndex = 0;
+            this.lblTimer.Text = "0:00:00";
+            this.lblTimer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // pnlTableaus
+            // btnStart
             // 
-            this.pnlTableaus.BackColor = System.Drawing.Color.ForestGreen;
-            this.tblLayout.SetColumnSpan(this.pnlTableaus, 3);
-            this.pnlTableaus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlTableaus.Location = new System.Drawing.Point(3, 45);
-            this.pnlTableaus.Name = "pnlTableaus";
-            this.pnlTableaus.Size = new System.Drawing.Size(1572, 595);
-            this.pnlTableaus.TabIndex = 0;
+            this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.btnStart.Location = new System.Drawing.Point(93, 3);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(129, 36);
+            this.btnStart.TabIndex = 3;
+            this.btnStart.Text = "Start";
+            this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // FormGame
             // 
@@ -129,6 +142,9 @@
             this.BackColor = System.Drawing.Color.Green;
             this.ClientSize = new System.Drawing.Size(1578, 844);
             this.Controls.Add(this.tblLayout);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(1600, 900);
+            this.MinimumSize = new System.Drawing.Size(1600, 900);
             this.Name = "FormGame";
             this.Text = "FormGame";
             this.tblLayout.ResumeLayout(false);
@@ -145,7 +161,8 @@
         private System.Windows.Forms.Label lblTimer;
         private System.Windows.Forms.Label lblScore;
         private System.Windows.Forms.Label lblMoves;
-        private System.Windows.Forms.Panel pnlTableaus;
+        private System.Windows.Forms.Panel pnlPlayArea;
+        private System.Windows.Forms.Button btnStart;
     }
 }
 

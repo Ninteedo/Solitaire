@@ -28,9 +28,9 @@ namespace Solitaire
 
         #endregion
 
-        #region "Card Variables"
+        #region Card Variables
 
-        #region "Locations"
+        #region Locations
 
         public enum Location
         {
@@ -45,12 +45,16 @@ namespace Solitaire
         private int _row;
         private int _column;
 
+        public EventHandler LocationChanged;
+
         public void SetLocation(Location newLocation, int height = 0, int row = 0, int column = 0)
         {
             _location = newLocation;
             _height = height;
             _row = row;
             _column = column;
+
+            LocationChanged(this, null);
         }
 
         public Location GetLocation()

@@ -23,6 +23,7 @@ namespace Solitaire
             CreateMarkers();
         }
 
+        private bool _deckCreated = false;
         private Card[] _deck;
         private CardPanel[] _cardPanels;
 
@@ -34,11 +35,11 @@ namespace Solitaire
         {
             get
             {
-                float cardSizeRatio = 65 / 100;  //width to height ratio for cards
+                double cardSizeRatio = 65.0 / 100.0;  //width to height ratio for cards
                 int desiredCardsH = 15;     //minimum number of cards horizontally
                 int desiredCardsV = 6;      //minimum number of cards vertically
-                float maxWidthPerCard = pnlPlayArea.Width / desiredCardsH;      //maximum width possible of cards
-                float maxHeightPerCard = pnlPlayArea.Height / desiredCardsV;    //maximum height possible of cards
+                int maxWidthPerCard = pnlPlayArea.Width / desiredCardsH;      //maximum width possible of cards
+                int maxHeightPerCard = pnlPlayArea.Height / desiredCardsV;    //maximum height possible of cards
                 
                 if (maxWidthPerCard > maxHeightPerCard)
                 {
@@ -88,7 +89,9 @@ namespace Solitaire
                     BackgroundImageLayout = ImageLayout.Stretch
                 };
 
+                Controls.Add(_cardPanels[i]);
                 pnlPlayArea.Controls.Add(_cardPanels[i]);
+                _cardPanels[i].BringToFront();
                 _cardPanels[i].UpdateLocation += MoveCardToLocation;
             }
 
@@ -97,16 +100,18 @@ namespace Solitaire
         
         private void SetupCards()
         {
+            int i, j, k;
+
             //creates shuffle order
             int[] shuffleOrder = new int[52];
             bool[] input = new bool[52];
 
             Random r = new Random();
 
-            for (int i = 0; i < 52; i++)
+            for (i = 0; i < 52; i++)
             {
                 int sanity = 60;
-                int j = r.Next(51);
+                j = r.Next(51);
                 do
                 {
                     if (!input[j])
@@ -126,19 +131,21 @@ namespace Solitaire
                 } while (sanity > 0);   //exits loop if infinite
             }
 
-            int k = 0;
-            for (int i = 1; i <= 7; i++)    //7 columns of tableau
+            k = 0;
+            for (i = 1; i <= 7; i++)    //7 columns of tableau
             {
-                for (int j = 1; j <= i; j++)
+                for (j = 1; j <= i; j++)
                 {
-                    _deck[k].SetLocation(Card.Location.Tableau, j,j, i);
+                    _deck[shuffleOrder[k]].SetLocation(Card.Location.Tableau, j,j, i);
+                    _deck[shuffleOrder[k]].SetFaceUp();
                     k += 1;
                 }
             }
 
-            for (int i = k; i < 52; i++)    //rest of cards go to stock
+            for (i = k; i < 52; i++)    //rest of cards go to stock
             {
-                _deck[i].SetLocation(Card.Location.Stock, i - k + 1);
+                _deck[shuffleOrder[i]].SetLocation(Card.Location.Stock, i - k + 1);
+                _deck[shuffleOrder[i]].SetFaceDown();
             }
         }
 
@@ -210,11 +217,11 @@ namespace Solitaire
                     dest = _wasteMarker.Location;
                     break;
                 case Card.Location.Tableau:
-                    dest = _tableauMarkers[cardToMove.GetColumn()].Location;
+                    dest = _tableauMarkers[cardToMove.GetColumn() - 1].Location;
                     dest.Y += (cardToMove.GetHeight() - 1);
                     break;
                 case Card.Location.Foundation:
-                    dest = _foundationMarkers[(int) cardToMove.GetSuite()].Location;
+                    dest = _foundationMarkers[(int) cardToMove.GetSuite() - 1].Location;
                     break;
                 default:
                     dest = new Point(0,0);
@@ -241,8 +248,12 @@ namespace Solitaire
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            _deck = CreateDeck();
-            CreateCardPanels();
+            if (!_deckCreated)
+            {
+                _deck = CreateDeck();
+                CreateCardPanels();
+                _deckCreated = true;
+            }
             SetupCards();
         }
     }

@@ -218,7 +218,7 @@ namespace Solitaire
                     break;
                 case Card.Location.Tableau:
                     dest = _tableauMarkers[cardToMove.GetColumn() - 1].Location;
-                    dest.Y += (cardToMove.GetHeight() - 1);
+                    dest.Y += (cardToMove.GetHeight() - 1) * CardSize.Height / 3;
                     break;
                 case Card.Location.Foundation:
                     dest = _foundationMarkers[(int) cardToMove.GetSuite() - 1].Location;
@@ -229,6 +229,7 @@ namespace Solitaire
             }
 
             cardPanelToMove.Location = dest;
+            cardPanelToMove.BringToFront();
         }
 
         #endregion
@@ -241,7 +242,7 @@ namespace Solitaire
         /// <returns></returns>
         private Point GetPlayAreaLocation(int percentFromLeft, int percentFromTop)
         {
-            return new Point(pnlPlayArea.Top + (pnlPlayArea.Height * percentFromTop / 100), pnlPlayArea.Left + (pnlPlayArea.Width * percentFromLeft / 100));
+            return new Point(pnlPlayArea.Left + (pnlPlayArea.Width * percentFromLeft / 100), pnlPlayArea.Top + (pnlPlayArea.Height * percentFromTop / 100));
         }
 
         #endregion

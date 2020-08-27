@@ -256,6 +256,101 @@ namespace Solitaire
             return new Point(pnlPlayArea.Left + (pnlPlayArea.Width * percentFromLeft / 100), pnlPlayArea.Top + (pnlPlayArea.Height * percentFromTop / 100));
         }
 
+        #region Game Logic
+
+        /// <summary>
+        /// Returns the <see cref="Card"/> which has matching <see cref="Spot"/>, or if no matching card then returns null.
+        /// </summary>
+        /// <param name="targetSpot"></param>
+        /// <returns></returns>
+        private Card? FindCardInSpot(Spot targetSpot)
+        {
+            //note: 2 cards should never share an identical spot
+
+            foreach (Card c in _deck)
+            {
+                if (c.GetLocation() == targetSpot)
+                {
+                    return c;
+                }
+            }
+
+            //if no card in target spot then return null
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the topmost <see cref="Card"/> in a tableau column or foundation pile
+        /// </summary>
+        /// <param name="spotToCheck">Looks at <see cref="Spot.GetPile()"/> and <see cref="Spot.GetColumn()"/>, but ignores <see cref="Spot.GetRow()"/> and <see cref="Spot.GetHeight()"/>.</param>
+        /// <returns></returns>
+        private Card FindTopCardInPile(Spot spotToCheck)
+        {
+            Card topInPile;
+            switch (spotToCheck.GetPile())
+            {
+                case Card.Location.Tableau:
+                    topInPile = _tableauMarkers[spotToCheck.GetColumn() - 1].GetCard();
+                    break;
+                case Card.Location.Foundation:
+                    topInPile = _foundationMarkers[spotToCheck.GetColumn() - 1].GetCard();
+                    break;
+                default:
+                    return _stockMarker.GetCard(); 
+                    //this is just a fallback, this shouldn't be triggered as player can only move cards to foundation and tableau
+            }
+
+            foreach (Card c in _deck)
+            {
+                if (c.GetLocation().GetPile() == spotToCheck.GetPile() && c.GetLocation().GetHeight() > topInPile.GetLocation().GetHeight())
+                {
+                    topInPile = c;
+                }
+            }
+
+            return topInPile;
+        }
+
+        /// <summary>
+        /// Returns whether or not a player's move is valid.
+        /// </summary>
+        /// <param name="cardToMove"></param>
+        /// <param name="newSpot"></param>
+        /// <returns></returns>
+        private bool CheckValidMove(Card cardToMove, Spot newSpot)
+        {
+            Card? topInNewPile = FindCardInSpot(newSpot);
+            if (topInNewPile != null)
+            {
+                switch (newSpot.GetPile())
+                {
+                    case Card.Location.Tableau:
+                        //card must be different colour to card below and have a value 1 less than the card below, or any king in an empty tableau
+                        if (cardToMove.GetValue() - 1 == topInNewPile.GetValue() &&
+                            (cardToMove.IsBlack() == topInNewPile.IsRed() ||
+                             topInNewPile.GetSuite() == Card.Suites.None))
+                        {
+                            return true;
+                        }
+                        break;
+                    case Card.Location.Foundation:
+                        //card must be same suite as the card below and have a value 1 more than the card below
+                        if (cardToMove.GetValue() + 1 == topInNewPile.GetValue() && cardToMove.GetSuite() == topInNewPile.GetSuite())
+                        {
+                            return true;
+                        }
+                        break;
+                }
+            }
+
+            //defaults to false
+            return false;
+        }
+
+        #endregion
+
+        
+
         #endregion
 
         private void btnStart_Click(object sender, EventArgs e)

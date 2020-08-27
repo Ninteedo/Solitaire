@@ -55,7 +55,6 @@
     <Compile Include="CardPanel.Designer.cs">
       <DependentUpon>CardPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="GameManager.cs" />
     <Compile Include="FormGame.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -109,6 +109,16 @@ namespace Solitaire
             }
         }
 
+        public bool IsBlack()
+        {
+            return GetSuite() == Suites.Clubs || GetSuite() == Suites.Spades;
+        }
+
+        public bool IsRed()
+        {
+            return GetSuite() == Suites.Diamonds || GetSuite() == Suites.Hearts;
+        }
+
         public event EventHandler FaceUpToggled;
 
         public void SetFaceUp()

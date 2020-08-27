@@ -100,7 +100,7 @@ namespace Solitaire
         
         private void SetupCards()
         {
-            int i, j, k;
+            int i, j;
 
             //creates shuffle order
             int[] shuffleOrder = new int[52];
@@ -131,20 +131,31 @@ namespace Solitaire
                 } while (sanity > 0);   //exits loop if infinite
             }
 
-            k = 0;
-            for (i = 1; i <= 7; i++)    //7 columns of tableau
+            int k = 0;
+            //7 columns of tableau
+            for (i = 1; i <= 7; i++)    
             {
                 for (j = 1; j <= i; j++)
                 {
-                    _deck[shuffleOrder[k]].SetLocation(Card.Location.Tableau, j,j, i);
-                    _deck[shuffleOrder[k]].SetFaceUp();
+                    _deck[shuffleOrder[k]].SetLocation(new Spot(Card.Location.Tableau, j, j, i));
+                    //only face up if at the bottom of the tableau
+                    if (i > j)
+                    {
+                        _deck[shuffleOrder[k]].SetFaceDown();
+                    }
+                    else
+                    {
+                        _deck[shuffleOrder[k]].SetFaceUp();
+                    }
+                    
                     k += 1;
                 }
             }
 
-            for (i = k; i < 52; i++)    //rest of cards go to stock
+            //rest of cards go to stock (all face down)
+            for (i = k; i < 52; i++)    
             {
-                _deck[shuffleOrder[i]].SetLocation(Card.Location.Stock, i - k + 1);
+                _deck[shuffleOrder[i]].SetLocation(new Spot(Card.Location.Stock, i - k + 1));
                 _deck[shuffleOrder[i]].SetFaceDown();
             }
         }
@@ -208,7 +219,7 @@ namespace Solitaire
             CardPanel cardPanelToMove = (CardPanel) sender;
             Card cardToMove = cardPanelToMove.GetCard();
 
-            switch (cardToMove.GetLocation())
+            switch (cardToMove.GetLocation().GetPile())
             {
                 case Card.Location.Stock:
                     dest = _stockMarker.Location;
@@ -217,8 +228,8 @@ namespace Solitaire
                     dest = _wasteMarker.Location;
                     break;
                 case Card.Location.Tableau:
-                    dest = _tableauMarkers[cardToMove.GetColumn() - 1].Location;
-                    dest.Y += (cardToMove.GetHeight() - 1) * CardSize.Height / 3;
+                    dest = _tableauMarkers[cardToMove.GetLocation().GetColumn() - 1].Location;
+                    dest.Y += (cardToMove.GetLocation().GetHeight() - 1) * CardSize.Height / 3;
                     break;
                 case Card.Location.Foundation:
                     dest = _foundationMarkers[(int) cardToMove.GetSuite() - 1].Location;

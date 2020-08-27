@@ -40,41 +40,20 @@ namespace Solitaire
             Foundation
         }
 
-        private Location _location;
-        private int _height;
-        private int _row;
-        private int _column;
+        private Spot _spot;
 
         public EventHandler LocationChanged;
 
-        public void SetLocation(Location newLocation, int height = 0, int row = 0, int column = 0)
+        public void SetLocation(Spot newLocation)
         {
-            _location = newLocation;
-            _height = height;
-            _row = row;
-            _column = column;
+            _spot = newLocation;
 
             LocationChanged(this, null);
         }
 
-        public Location GetLocation()
+        public Spot GetLocation()
         {
-            return _location;
-        }
-
-        public int GetHeight()
-        {
-            return _height;
-        }
-
-        public int GetRow()
-        {
-            return _row;
-        }
-
-        public int GetColumn()
-        {
-            return _column;
+            return _spot;
         }
 
 

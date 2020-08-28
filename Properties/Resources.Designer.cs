@@ -473,16 +473,6 @@ namespace Solitaire.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blankmarker {
-            get {
-                object obj = ResourceManager.GetObject("blankmarker", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap blue_back {
             get {
                 object obj = ResourceManager.GetObject("blue_back", resourceCulture);
@@ -596,6 +586,16 @@ namespace Solitaire.Properties {
         internal static System.Drawing.Bitmap MH {
             get {
                 object obj = ResourceManager.GetObject("MH", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MN {
+            get {
+                object obj = ResourceManager.GetObject("MN", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

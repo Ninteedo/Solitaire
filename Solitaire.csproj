@@ -255,5 +255,20 @@
   <ItemGroup>
     <None Include="images\blue_back.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="images\blankmarker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\MC.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\MD.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\MH.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\MS.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

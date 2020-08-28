@@ -473,6 +473,16 @@ namespace Solitaire.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap blankmarker {
+            get {
+                object obj = ResourceManager.GetObject("blankmarker", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap blue_back {
             get {
                 object obj = ResourceManager.GetObject("blue_back", resourceCulture);
@@ -556,6 +566,46 @@ namespace Solitaire.Properties {
         internal static System.Drawing.Bitmap KS {
             get {
                 object obj = ResourceManager.GetObject("KS", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MC {
+            get {
+                object obj = ResourceManager.GetObject("MC", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MD {
+            get {
+                object obj = ResourceManager.GetObject("MD", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MH {
+            get {
+                object obj = ResourceManager.GetObject("MH", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MS {
+            get {
+                object obj = ResourceManager.GetObject("MS", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -23,7 +23,7 @@ namespace Solitaire
             _value = value;
             _suite = suite;
             _spot = startSpot;
-            _isMarker = isMarker;
+            IsMarker = isMarker;
 
             GetFrontImage();
             GetBackImage();
@@ -140,20 +140,7 @@ namespace Solitaire
 
         #endregion
 
-        private bool _canMove;
-
-        public bool CanMove
-        {
-            get { return _canMove; }
-            set { _canMove = value; }
-        }
-
-        private bool _isMarker;
-
-        public bool IsMarker
-        {
-            get { return _isMarker; }
-        }
+        public bool IsMarker { get; }
 
         #endregion
 

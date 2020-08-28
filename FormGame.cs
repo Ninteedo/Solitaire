@@ -165,7 +165,6 @@ namespace Solitaire
                     else
                     {
                         _deck[shuffleOrder[k]].SetFaceUp();
-                        _deck[shuffleOrder[k]].CanMove = true;
                     }
                     
                     k += 1;

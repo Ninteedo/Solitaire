@@ -55,6 +55,35 @@ namespace Solitaire
             }
         }
 
+        private CardPanel[] GetAllCardPanels()
+        {
+            CardPanel[] result = new CardPanel[65];
+
+            int i = 0;
+
+            result[i] = _stockMarker;
+            i++;
+            result[i] = _wasteMarker;
+            i++;
+            foreach (CardPanel tMarker in _tableauMarkers)
+            {
+                result[i] = tMarker;
+                i++;
+            }
+            foreach (CardPanel fMarker in _foundationMarkers)
+            {
+                result[i] = fMarker;
+                i++;
+            }
+            foreach (CardPanel cMarker in _cardPanels)
+            {
+                result[i] = cMarker;
+                i++;
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Returns an array of <see cref="Card"/> representing a 52 size deck of cards.
         /// </summary>
@@ -84,20 +113,7 @@ namespace Solitaire
 
             for (int i = 0; i < 52; i++)
             {
-                _cardPanels[i] = new CardPanel(ref _deck[i])
-                {
-                    Size = CardSize,
-                    BackgroundImageLayout = ImageLayout.Stretch
-                };
-
-                Controls.Add(_cardPanels[i]);
-                pnlPlayArea.Controls.Add(_cardPanels[i]);
-                _cardPanels[i].BringToFront();
-
-                _cardPanels[i].UpdateLocation += MoveCardToLocation;
-                _cardPanels[i].MouseDown += CardPanelMouseDown;
-                _cardPanels[i].MouseUp += CardPanelMouseUp;
-                _cardPanels[i].MouseMove += MouseMoved;
+                _cardPanels[i] = new CardPanel(ref _deck[i]);
             }
         }
         
@@ -149,6 +165,7 @@ namespace Solitaire
                     else
                     {
                         _deck[shuffleOrder[k]].SetFaceUp();
+                        _deck[shuffleOrder[k]].CanMove = true;
                     }
                     
                     k += 1;
@@ -166,11 +183,13 @@ namespace Solitaire
 
         #region Markers
 
-        private Card _stockWasteMarkerCard;
+        private Card _stockMarkerCard;
         private CardPanel _stockMarker;
+
+        private Card _wasteMarkerCard;
         private CardPanel _wasteMarker;
 
-        private Card _tableauMarkerCard;
+        private Card[] _tableauMarkerCards;
         private CardPanel[] _tableauMarkers;
 
         private Card[] _foundationMarkerCards;
@@ -182,20 +201,23 @@ namespace Solitaire
         private void CreateMarkers()
         {
             //stock and waste markers
-            _stockWasteMarkerCard = new Card(0, Card.Suites.None);
-            _stockMarker = new CardPanel(ref _stockWasteMarkerCard);
+            _stockMarkerCard = new Card(0, Card.Suites.None, new Spot(Card.Pile.Stock), true);
+            _stockMarker = new CardPanel(ref _stockMarkerCard);
             _stockMarker.Location = GetPlayAreaLocation(10, 10);
-            _wasteMarker = new CardPanel(ref _stockWasteMarkerCard);
+
+            _wasteMarkerCard = new Card(0, Card.Suites.None, new Spot(Card.Pile.Waste), true);
+            _wasteMarker = new CardPanel(ref _wasteMarkerCard);
             _wasteMarker.Location = GetPlayAreaLocation(10, 30);
 
 
             //tableau markers
+            _tableauMarkerCards = new Card[7];
             _tableauMarkers = new CardPanel[7];
 
-            _tableauMarkerCard = new Card(14, Card.Suites.None);
             for (int i = 0; i < 7; i++)
             {
-                _tableauMarkers[i] = new CardPanel(ref _tableauMarkerCard);
+                _tableauMarkerCards[i] = new Card(14, Card.Suites.None, new Spot(Card.Pile.Tableau, 0, i + 1), true);
+                _tableauMarkers[i] = new CardPanel(ref _tableauMarkerCards[i]);
                 _tableauMarkers[i].Location = GetPlayAreaLocation(25 + i * 5, 10);
             }
 
@@ -206,7 +228,7 @@ namespace Solitaire
 
             for (int i = 0; i < 4; i++)
             {
-                _foundationMarkerCards[i] = new Card(0, (Card.Suites) i + 1);
+                _foundationMarkerCards[i] = new Card(0, (Card.Suites) i + 1, new Spot(Card.Pile.Foundation, 0, i + 1), true);
                 _foundationMarkers[i] = new CardPanel(ref _foundationMarkerCards[i]);
                 _foundationMarkers[i].Location = GetPlayAreaLocation(80, 10 + 20 * i);
             }
@@ -269,16 +291,30 @@ namespace Solitaire
         {
             CardPanel clickedCardPanel = (CardPanel) sender;
 
-            if (clickedCardPanel.GetCard().CanMove)
+            //markers cannot move
+            if (!clickedCardPanel.GetCard().IsMarker)
             {
-                _heldCardPanel = clickedCardPanel;
-                _mouseOffset = e.Location;
+                if (clickedCardPanel.GetCard().GetSpot().GetPile() == Card.Pile.Stock)
+                {
+                    clickedCardPanel.GetCard().SetSpot(new Spot(Card.Pile.Waste, FindTopCardInPile(new Spot(Card.Pile.Waste)).GetSpot().GetHeight() + 1));
+                    clickedCardPanel.GetCard().SetFaceUp();
+                }
+
+                if (clickedCardPanel.GetCard() == FindTopCardInPile(clickedCardPanel.GetCard().GetSpot()))
+                {
+                    _heldCardPanel = clickedCardPanel;
+                    _mouseOffset = e.Location;
+                }
             }
         }
 
         private void CardPanelMouseUp(object sender, MouseEventArgs e)
         {
-            _heldCardPanel = null;
+            if (_heldCardPanel != null)
+            {
+                CardDroppedByPlayer(ref _heldCardPanel);
+                _heldCardPanel = null;
+            }
         }
 
         private void MouseMoved(object sender, MouseEventArgs e)
@@ -299,7 +335,7 @@ namespace Solitaire
         /// <returns></returns>
         private bool CheckForCardPanelOverlap(CardPanel panel1, CardPanel panel2)
         {
-            return !((panel1.Left > panel2.Right || panel1.Top > panel2.Bottom) &&
+            return !((panel1.Left > panel2.Right || panel1.Top > panel2.Bottom) ||
                      (panel2.Left > panel1.Right || panel2.Top > panel1.Bottom));
         }
 
@@ -318,9 +354,11 @@ namespace Solitaire
         {
             //note: 2 cards should never share an identical spot
 
-            foreach (Card c in _deck)
+            foreach (CardPanel cPanel in GetAllCardPanels())
             {
-                if (c.GetSpot() == targetSpot)
+                Card c = cPanel.GetCard();
+                if (c.GetSpot().GetPile() == targetSpot.GetPile() && c.GetSpot().GetHeight() == targetSpot.GetHeight() &&
+                     c.GetSpot().GetColumn() == targetSpot.GetColumn())
                 {
                     return c;
                 }
@@ -333,13 +371,19 @@ namespace Solitaire
         /// <summary>
         /// Returns the topmost <see cref="Card"/> in a tableau column or foundation pile
         /// </summary>
-        /// <param name="spotToCheck">Looks at <see cref="Spot.GetPile()"/> and <see cref="Spot.GetColumn()"/>, but ignores <see cref="Spot.GetRow()"/> and <see cref="Spot.GetHeight()"/>.</param>
+        /// <param name="spotToCheck">Looks at <see cref="Spot.GetPile()"/> and <see cref="Spot.GetColumn()"/>, but ignores <see cref="Spot.GetHeight()"/>.</param>
         /// <returns></returns>
         private Card FindTopCardInPile(Spot spotToCheck)
         {
             Card topInPile;
             switch (spotToCheck.GetPile())
             {
+                case Card.Pile.Stock:
+                    topInPile = _stockMarker.GetCard();
+                    break;
+                case Card.Pile.Waste:
+                    topInPile = _wasteMarker.GetCard();
+                    break;
                 case Card.Pile.Tableau:
                     topInPile = _tableauMarkers[spotToCheck.GetColumn() - 1].GetCard();
                     break;
@@ -347,13 +391,13 @@ namespace Solitaire
                     topInPile = _foundationMarkers[spotToCheck.GetColumn() - 1].GetCard();
                     break;
                 default:
-                    return _stockMarker.GetCard(); 
+                    return _stockMarker.GetCard();
                     //this is just a fallback, this shouldn't be triggered as player can only move cards to foundation and tableau
             }
 
             foreach (Card c in _deck)
             {
-                if (c.GetSpot().GetPile() == spotToCheck.GetPile() && c.GetSpot().GetHeight() > topInPile.GetSpot().GetHeight())
+                if (c.GetSpot().GetPile() == spotToCheck.GetPile() && c.GetSpot().GetColumn() == spotToCheck.GetColumn() && c.GetSpot().GetHeight() > topInPile.GetSpot().GetHeight())
                 {
                     topInPile = c;
                 }
@@ -370,14 +414,14 @@ namespace Solitaire
         /// <returns></returns>
         private bool CheckValidMove(Card cardToMove, Spot newSpot)
         {
-            Card? topInNewPile = FindCardInSpot(newSpot);
+            Card topInNewPile = FindTopCardInPile(new Spot(newSpot.GetPile(), 0, newSpot.GetColumn()));
             if (topInNewPile != null)
             {
                 switch (newSpot.GetPile())
                 {
                     case Card.Pile.Tableau:
                         //card must be different colour to card below and have a value 1 less than the card below, or any king in an empty tableau
-                        if (cardToMove.GetValue() - 1 == topInNewPile.GetValue() &&
+                        if (cardToMove.GetValue() == topInNewPile.GetValue() - 1 &&
                             (cardToMove.IsBlack() == topInNewPile.IsRed() ||
                              topInNewPile.GetSuite() == Card.Suites.None))
                         {
@@ -386,7 +430,7 @@ namespace Solitaire
                         break;
                     case Card.Pile.Foundation:
                         //card must be same suite as the card below and have a value 1 more than the card below
-                        if (cardToMove.GetValue() + 1 == topInNewPile.GetValue() && cardToMove.GetSuite() == topInNewPile.GetSuite())
+                        if (cardToMove.GetValue() == topInNewPile.GetValue() + 1 && cardToMove.GetSuite() == topInNewPile.GetSuite())
                         {
                             return true;
                         }
@@ -398,6 +442,113 @@ namespace Solitaire
             return false;
         }
 
+        /// <summary>
+        /// Returns a List of <see cref="Spot"/>s of places where the provided <see cref="cardToCheck"/> can move to.
+        /// </summary>
+        /// <param name="cardToCheck"></param>
+        /// <returns></returns>
+        private List<Spot> GeneratePossibleSpots(Card cardToCheck)
+        {
+            List<Spot> result = new List<Spot>();
+            int suiteNumber = (int) cardToCheck.GetSuite();
+
+            //checks the corresponding foundation pile, current height of foundation pile plus one
+            Spot correspondingFoundation = new Spot(Card.Pile.Foundation,
+                FindTopCardInPile(new Spot(Card.Pile.Foundation, 0, suiteNumber)).GetSpot().GetHeight() + 1,
+                suiteNumber);
+            if (CheckValidMove(cardToCheck, correspondingFoundation))
+            {
+                result.Add(correspondingFoundation);
+            }
+
+            //check each tableau
+            Spot[] tableauSpots = new Spot[7];
+            for (int i = 0; i < 7; i++)
+            {
+                tableauSpots[i] = new Spot(Card.Pile.Tableau,
+                    FindTopCardInPile(new Spot(Card.Pile.Tableau, 0, i + 1)).GetSpot().GetHeight() + 1,
+                    i + 1);
+                if (CheckValidMove(cardToCheck, tableauSpots[i]))
+                {
+                    result.Add(tableauSpots[i]);
+                }
+            }
+
+            return result;
+        }
+
+        private void CardDroppedByPlayer(ref CardPanel cardPanelMoved)
+        {
+            List<Spot> possibleSpots = GeneratePossibleSpots(cardPanelMoved.GetCard());
+            bool invalidDrop = true;
+
+            foreach (Spot s in possibleSpots)
+            {
+                //other card is one below where the new card will be if checks complete successfully
+                Card? otherCard = FindCardInSpot(new Spot(s.GetPile(), s.GetHeight() - 1, s.GetColumn()));
+                if (otherCard != null)
+                {
+                    CardPanel? otherCardPanel = FindCardPanelByCard(otherCard);
+                    if (otherCardPanel != null)
+                    {
+                        if (CheckForCardPanelOverlap(cardPanelMoved, otherCardPanel))
+                        {
+                            //valid move
+                            Spot oldSpot = cardPanelMoved.GetCard().GetSpot();
+                            cardPanelMoved.GetCard().SetSpot(s);
+                            invalidDrop = false;
+
+                            Card topOfOldSpot = FindTopCardInPile(oldSpot);
+                            if (topOfOldSpot.GetSpot().GetPile() == Card.Pile.Tableau && !topOfOldSpot.IsMarker)
+                            {
+                                //reveals card under card moved
+                                topOfOldSpot.SetFaceUp();
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (invalidDrop)
+            {
+                cardPanelMoved.UpdateLocation(cardPanelMoved, null);
+            }
+        }
+
+        private CardPanel? FindCardPanelByCard(Card searchCard)
+        {
+            //checks tableau markers
+            foreach (CardPanel tMarkerPanel in _tableauMarkers)
+            {
+                if (tMarkerPanel.GetCard() == searchCard)
+                {
+                    return tMarkerPanel;
+                }
+            }
+
+            //checks foundation markers
+            foreach (CardPanel fMarkerPanel in _foundationMarkers)
+            {
+                if (fMarkerPanel.GetCard() == searchCard)
+                {
+                    return fMarkerPanel;
+                }
+            }
+
+            //checks the deck
+            foreach (CardPanel cPanel in _cardPanels)
+            {
+                if (cPanel.GetCard() == searchCard)
+                {
+                    return cPanel;
+                }
+            }
+
+            return null;
+        }
+
         #endregion
 
         private void StartGame()
@@ -407,7 +558,24 @@ namespace Solitaire
                 _deck = CreateDeck();
                 CreateCardPanels();
                 _deckCreated = true;
+
+                CardPanel[] allCardPanels = GetAllCardPanels();
+
+                foreach (CardPanel cPanel in allCardPanels)
+                {
+                    //Controls.Add(_cardPanels[i]);
+                    pnlPlayArea.Controls.Add(cPanel);
+                    cPanel.BringToFront();
+
+                    cPanel.UpdateLocation += MoveCardToLocation;
+                    cPanel.MouseDown += CardPanelMouseDown;
+                    cPanel.MouseUp += CardPanelMouseUp;
+                    cPanel.MouseMove += MouseMoved;
+                    cPanel.Size = CardSize;
+                    cPanel.BackgroundImageLayout = ImageLayout.Stretch;
+                }
             }
+            
             _heldCardPanel = null;
             SetupCards();
         }

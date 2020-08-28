@@ -15,12 +15,15 @@ namespace Solitaire
 {
     public class Card
     {
+
         #region Constructors
 
-        public Card(int value, Suites suite)
+        public Card(int value, Suites suite, Spot startSpot = null, bool isMarker = false)
         {
             _value = value;
             _suite = suite;
+            _spot = startSpot;
+            _isMarker = isMarker;
 
             GetFrontImage();
             GetBackImage();
@@ -40,9 +43,9 @@ namespace Solitaire
             Foundation
         }
 
-        private Spot _spot;
-
         public EventHandler LocationChanged;
+
+        private Spot _spot;
 
         public void SetSpot(Spot newLocation)
         {
@@ -137,12 +140,19 @@ namespace Solitaire
 
         #endregion
 
-        private bool _canMove = true;
+        private bool _canMove;
 
         public bool CanMove
         {
             get { return _canMove; }
             set { _canMove = value; }
+        }
+
+        private bool _isMarker;
+
+        public bool IsMarker
+        {
+            get { return _isMarker; }
         }
 
         #endregion
@@ -185,7 +195,7 @@ namespace Solitaire
         {
             string[] valueNames = 
             {
-                "0", "A", "_2", "_3", "_4", "_5", "_6", "_7", "_8", "_9", "_10", "J", "Q", "K"
+                "M", "A", "_2", "_3", "_4", "_5", "_6", "_7", "_8", "_9", "_10", "J", "Q", "K"
             };  //underscores were automatically inserted for card names beginning with a number
             string[] suiteNames =
             {
@@ -198,7 +208,7 @@ namespace Solitaire
             }
             else
             {
-                return "unknown.png";
+                return "blank";
             }
         }
 

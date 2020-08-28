@@ -241,28 +241,39 @@ namespace Solitaire
         /// <param name="e"></param>
         private void MoveCardToLocation(object sender, EventArgs e)
         {
+            const int cardPanelSplitFactor = 3;
+
             Point dest;
             CardPanel cardPanelToMove = (CardPanel) sender;
             Card cardToMove = cardPanelToMove.GetCard();
 
-            switch (cardToMove.GetSpot().GetPile())
+            if (_heldCardPanel != null && _followerCardPanels.Contains(cardPanelToMove))
             {
-                case Card.Pile.Stock:
-                    dest = _stockMarker.Location;
-                    break;
-                case Card.Pile.Waste:
-                    dest = _wasteMarker.Location;
-                    break;
-                case Card.Pile.Tableau:
-                    dest = _tableauMarkers[cardToMove.GetSpot().GetColumn() - 1].Location;
-                    dest.Y += (cardToMove.GetSpot().GetHeight() - 1) * CardSize.Height / 3;
-                    break;
-                case Card.Pile.Foundation:
-                    dest = _foundationMarkers[(int) cardToMove.GetSuite() - 1].Location;
-                    break;
-                default:
-                    dest = new Point(0,0);
-                    break;
+                dest = new Point(_heldCardPanel.Location.X,
+                    _heldCardPanel.Location.Y + (_followerCardPanels.IndexOf(cardPanelToMove) + 1) * CardSize.Height /
+                    cardPanelSplitFactor);
+            }
+            else
+            {
+                switch (cardToMove.GetSpot().GetPile())
+                {
+                    case Card.Pile.Stock:
+                        dest = _stockMarker.Location;
+                        break;
+                    case Card.Pile.Waste:
+                        dest = _wasteMarker.Location;
+                        break;
+                    case Card.Pile.Tableau:
+                        dest = _tableauMarkers[cardToMove.GetSpot().GetColumn() - 1].Location;
+                        dest.Y += (cardToMove.GetSpot().GetHeight() - 1) * CardSize.Height / cardPanelSplitFactor;
+                        break;
+                    case Card.Pile.Foundation:
+                        dest = _foundationMarkers[(int) cardToMove.GetSuite() - 1].Location;
+                        break;
+                    default:
+                        dest = new Point(0,0);
+                        break;
+                }
             }
 
             cardPanelToMove.Location = dest;
@@ -286,24 +297,55 @@ namespace Solitaire
 
         private CardPanel? _heldCardPanel;
         private Point? _mouseOffset;
+        private List<CardPanel> _followerCardPanels = new List<CardPanel>();
 
         private void CardPanelMouseDown(object sender, MouseEventArgs e)
         {
             CardPanel clickedCardPanel = (CardPanel) sender;
+            Spot cardSpot = clickedCardPanel.GetCard().GetSpot();
+            _followerCardPanels.Clear();
 
             //markers cannot move
             if (!clickedCardPanel.GetCard().IsMarker)
             {
-                if (clickedCardPanel.GetCard().GetSpot().GetPile() == Card.Pile.Stock)
+                if (cardSpot.GetPile() == Card.Pile.Stock)
                 {
                     clickedCardPanel.GetCard().SetSpot(new Spot(Card.Pile.Waste, FindTopCardInPile(new Spot(Card.Pile.Waste)).GetSpot().GetHeight() + 1));
                     clickedCardPanel.GetCard().SetFaceUp();
                 }
 
-                if (clickedCardPanel.GetCard() == FindTopCardInPile(clickedCardPanel.GetCard().GetSpot()))
+                //if (clickedCardPanel.GetCard() == FindTopCardInPile(cardSpot))
+                if (!clickedCardPanel.GetCard().GetFaceDown())
                 {
                     _heldCardPanel = clickedCardPanel;
                     _mouseOffset = e.Location;
+
+                    //finds all follower cards, revealed cards on top of the held card
+                    for (int i = cardSpot.GetHeight() + 1; i <= FindTopCardInPile(
+                        cardSpot).GetSpot().GetHeight(); i++)
+                    {
+                        Card? c = FindCardInSpot(new Spot(cardSpot.GetPile(),
+                            i, cardSpot.GetColumn()));
+                        if (c != null)
+                        {
+                            CardPanel? cPanel = FindCardPanelByCard(c);
+                            if (cPanel != null)
+                            {
+                                _followerCardPanels.Add(cPanel);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                //when stock marker is clicked return waste cards to stock
+                int j = FindTopCardInPile(new Spot(Card.Pile.Waste)).GetSpot().GetHeight();
+                for (int i = j; i > 0; i--)
+                {
+                    Card? c = FindCardInSpot(new Spot(Card.Pile.Waste, i));
+                    c?.SetSpot(new Spot(Card.Pile.Stock, j - i + 1));
+                    c?.SetFaceDown();
                 }
             }
         }
@@ -314,6 +356,11 @@ namespace Solitaire
             {
                 CardDroppedByPlayer(ref _heldCardPanel);
                 _heldCardPanel = null;
+
+                for (int i = 0; i < _followerCardPanels.Count; i++)
+                {
+                    CardDroppedByPlayer(ref _followerCardPanels.ToArray()[i]);
+                }
             }
         }
 
@@ -324,6 +371,12 @@ namespace Solitaire
             {
                 _heldCardPanel.Location = new Point(e.X + _heldCardPanel.Left - _mouseOffset.Value.X,
                     e.Y + _heldCardPanel.Top - _mouseOffset.Value.Y); 
+
+                //moves all followers
+                foreach (CardPanel cPanel in _followerCardPanels)
+                {
+                    cPanel.UpdateLocation(cPanel, null);
+                }
             }
         }
 

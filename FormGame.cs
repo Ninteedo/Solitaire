@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,12 +25,12 @@ namespace Solitaire
         }
 
         private bool _deckCreated = false;
-        private Card[] _deck;
-        private CardPanel[] _cardPanels;
+        private Card[] _deck = new Card[52];
+        private CardPanel[] _cardPanels = new CardPanel[52];
 
         #region User Interface
 
-        private SizeF drawScale = new SizeF(1, 1);
+        //private SizeF drawScale = new SizeF(1, 1);
 
         private Size CardSize
         {
@@ -92,10 +93,12 @@ namespace Solitaire
                 Controls.Add(_cardPanels[i]);
                 pnlPlayArea.Controls.Add(_cardPanels[i]);
                 _cardPanels[i].BringToFront();
-                _cardPanels[i].UpdateLocation += MoveCardToLocation;
-            }
 
-            
+                _cardPanels[i].UpdateLocation += MoveCardToLocation;
+                _cardPanels[i].MouseDown += CardPanelMouseDown;
+                _cardPanels[i].MouseUp += CardPanelMouseUp;
+                _cardPanels[i].MouseMove += MouseMoved;
+            }
         }
         
         private void SetupCards()
@@ -137,7 +140,7 @@ namespace Solitaire
             {
                 for (j = 1; j <= i; j++)
                 {
-                    _deck[shuffleOrder[k]].SetLocation(new Spot(Card.Location.Tableau, j, j, i));
+                    _deck[shuffleOrder[k]].SetSpot(new Spot(Card.Pile.Tableau, j, i));
                     //only face up if at the bottom of the tableau
                     if (i > j)
                     {
@@ -155,10 +158,11 @@ namespace Solitaire
             //rest of cards go to stock (all face down)
             for (i = k; i < 52; i++)    
             {
-                _deck[shuffleOrder[i]].SetLocation(new Spot(Card.Location.Stock, i - k + 1));
+                _deck[shuffleOrder[i]].SetSpot(new Spot(Card.Pile.Stock, i - k + 1));
                 _deck[shuffleOrder[i]].SetFaceDown();
             }
         }
+
 
         #region Markers
 
@@ -219,19 +223,19 @@ namespace Solitaire
             CardPanel cardPanelToMove = (CardPanel) sender;
             Card cardToMove = cardPanelToMove.GetCard();
 
-            switch (cardToMove.GetLocation().GetPile())
+            switch (cardToMove.GetSpot().GetPile())
             {
-                case Card.Location.Stock:
+                case Card.Pile.Stock:
                     dest = _stockMarker.Location;
                     break;
-                case Card.Location.Waste:
+                case Card.Pile.Waste:
                     dest = _wasteMarker.Location;
                     break;
-                case Card.Location.Tableau:
-                    dest = _tableauMarkers[cardToMove.GetLocation().GetColumn() - 1].Location;
-                    dest.Y += (cardToMove.GetLocation().GetHeight() - 1) * CardSize.Height / 3;
+                case Card.Pile.Tableau:
+                    dest = _tableauMarkers[cardToMove.GetSpot().GetColumn() - 1].Location;
+                    dest.Y += (cardToMove.GetSpot().GetHeight() - 1) * CardSize.Height / 3;
                     break;
-                case Card.Location.Foundation:
+                case Card.Pile.Foundation:
                     dest = _foundationMarkers[(int) cardToMove.GetSuite() - 1].Location;
                     break;
                 default:
@@ -256,6 +260,53 @@ namespace Solitaire
             return new Point(pnlPlayArea.Left + (pnlPlayArea.Width * percentFromLeft / 100), pnlPlayArea.Top + (pnlPlayArea.Height * percentFromTop / 100));
         }
 
+        #region Mouse Control
+
+        private CardPanel? _heldCardPanel;
+        private Point? _mouseOffset;
+
+        private void CardPanelMouseDown(object sender, MouseEventArgs e)
+        {
+            CardPanel clickedCardPanel = (CardPanel) sender;
+
+            if (clickedCardPanel.GetCard().CanMove)
+            {
+                _heldCardPanel = clickedCardPanel;
+                _mouseOffset = e.Location;
+            }
+        }
+
+        private void CardPanelMouseUp(object sender, MouseEventArgs e)
+        {
+            _heldCardPanel = null;
+        }
+
+        private void MouseMoved(object sender, MouseEventArgs e)
+        {
+            //the location value of e is relative to the top left of the sender
+            if (_heldCardPanel != null && _mouseOffset != null)
+            {
+                _heldCardPanel.Location = new Point(e.X + _heldCardPanel.Left - _mouseOffset.Value.X,
+                    e.Y + _heldCardPanel.Top - _mouseOffset.Value.Y); 
+            }
+        }
+
+        /// <summary>
+        /// Returns true if the 2 input <see cref="CardPanel"/>s are overlapping.
+        /// </summary>
+        /// <param name="panel1"></param>
+        /// <param name="panel2"></param>
+        /// <returns></returns>
+        private bool CheckForCardPanelOverlap(CardPanel panel1, CardPanel panel2)
+        {
+            return !((panel1.Left > panel2.Right || panel1.Top > panel2.Bottom) &&
+                     (panel2.Left > panel1.Right || panel2.Top > panel1.Bottom));
+        }
+
+        #endregion
+
+        #endregion
+
         #region Game Logic
 
         /// <summary>
@@ -269,7 +320,7 @@ namespace Solitaire
 
             foreach (Card c in _deck)
             {
-                if (c.GetLocation() == targetSpot)
+                if (c.GetSpot() == targetSpot)
                 {
                     return c;
                 }
@@ -289,10 +340,10 @@ namespace Solitaire
             Card topInPile;
             switch (spotToCheck.GetPile())
             {
-                case Card.Location.Tableau:
+                case Card.Pile.Tableau:
                     topInPile = _tableauMarkers[spotToCheck.GetColumn() - 1].GetCard();
                     break;
-                case Card.Location.Foundation:
+                case Card.Pile.Foundation:
                     topInPile = _foundationMarkers[spotToCheck.GetColumn() - 1].GetCard();
                     break;
                 default:
@@ -302,7 +353,7 @@ namespace Solitaire
 
             foreach (Card c in _deck)
             {
-                if (c.GetLocation().GetPile() == spotToCheck.GetPile() && c.GetLocation().GetHeight() > topInPile.GetLocation().GetHeight())
+                if (c.GetSpot().GetPile() == spotToCheck.GetPile() && c.GetSpot().GetHeight() > topInPile.GetSpot().GetHeight())
                 {
                     topInPile = c;
                 }
@@ -324,7 +375,7 @@ namespace Solitaire
             {
                 switch (newSpot.GetPile())
                 {
-                    case Card.Location.Tableau:
+                    case Card.Pile.Tableau:
                         //card must be different colour to card below and have a value 1 less than the card below, or any king in an empty tableau
                         if (cardToMove.GetValue() - 1 == topInNewPile.GetValue() &&
                             (cardToMove.IsBlack() == topInNewPile.IsRed() ||
@@ -333,7 +384,7 @@ namespace Solitaire
                             return true;
                         }
                         break;
-                    case Card.Location.Foundation:
+                    case Card.Pile.Foundation:
                         //card must be same suite as the card below and have a value 1 more than the card below
                         if (cardToMove.GetValue() + 1 == topInNewPile.GetValue() && cardToMove.GetSuite() == topInNewPile.GetSuite())
                         {
@@ -349,11 +400,7 @@ namespace Solitaire
 
         #endregion
 
-        
-
-        #endregion
-
-        private void btnStart_Click(object sender, EventArgs e)
+        private void StartGame()
         {
             if (!_deckCreated)
             {
@@ -361,7 +408,14 @@ namespace Solitaire
                 CreateCardPanels();
                 _deckCreated = true;
             }
+            _heldCardPanel = null;
             SetupCards();
+        }
+
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            StartGame();
         }
     }
 }

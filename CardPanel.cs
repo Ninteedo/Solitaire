@@ -46,5 +46,13 @@ namespace Solitaire
         {
             UpdateLocation(this, null);
         }
+
+        #region Mouse
+
+
+
+        #endregion
+
+
     }
 }

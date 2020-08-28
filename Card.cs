@@ -32,7 +32,7 @@ namespace Solitaire
 
         #region Locations
 
-        public enum Location
+        public enum Pile
         {
             Stock,
             Waste,
@@ -44,20 +44,22 @@ namespace Solitaire
 
         public EventHandler LocationChanged;
 
-        public void SetLocation(Spot newLocation)
+        public void SetSpot(Spot newLocation)
         {
             _spot = newLocation;
 
             LocationChanged(this, null);
         }
 
-        public Spot GetLocation()
+        public Spot GetSpot()
         {
             return _spot;
         }
 
 
         #endregion
+
+        #region Card Values
 
         private readonly int _value;
         private readonly Suites _suite;
@@ -89,7 +91,7 @@ namespace Solitaire
 
         public string GetName()
         {
-            string[] valueNames = 
+            string[] valueNames =
             {
                 "Blank", "Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen",
                 "King"
@@ -101,7 +103,7 @@ namespace Solitaire
 
             if (ValidCardValue)
             {
-                return valueNames[_value] + " of " + suiteNames[(int) _suite];
+                return valueNames[_value] + " of " + suiteNames[(int)_suite];
             }
             else
             {
@@ -131,6 +133,16 @@ namespace Solitaire
         {
             _isFaceDown = true;
             FaceUpToggled(this, null);
+        }
+
+        #endregion
+
+        private bool _canMove = true;
+
+        public bool CanMove
+        {
+            get { return _canMove; }
+            set { _canMove = value; }
         }
 
         #endregion

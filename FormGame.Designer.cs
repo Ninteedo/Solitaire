@@ -121,7 +121,7 @@
             this.lblTimer.Name = "lblTimer";
             this.lblTimer.Size = new System.Drawing.Size(307, 32);
             this.lblTimer.TabIndex = 0;
-            this.lblTimer.Text = "0:00:00";
+            this.lblTimer.Text = "00:00:00";
             this.lblTimer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnStart

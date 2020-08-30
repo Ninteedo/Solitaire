@@ -22,6 +22,8 @@ namespace Solitaire
             InitializeComponent();
 
             CreateMarkers();
+            _gameTimer.Interval = 1000;
+            _gameTimer.Tick += TimerTicked;
         }
 
         private bool _deckCreated;
@@ -350,6 +352,8 @@ namespace Solitaire
                     c?.SetSpot(new Spot(Card.Pile.Stock, j - i + 1));
                     c?.SetFaceDown();
                 }
+
+                Score -= 100;
             }
         }
 
@@ -357,12 +361,12 @@ namespace Solitaire
         {
             if (_heldCardPanel != null)
             {
-                CardDroppedByPlayer(ref _heldCardPanel);
+                CardDroppedByPlayer(ref _heldCardPanel, false);
                 _heldCardPanel = null;
 
                 for (int i = 0; i < _followerCardPanels.Count; i++)
                 {
-                    CardDroppedByPlayer(ref _followerCardPanels.ToArray()[i]);
+                    CardDroppedByPlayer(ref _followerCardPanels.ToArray()[i], true);
                 }
             }
         }
@@ -400,6 +404,102 @@ namespace Solitaire
         #endregion
 
         #region Game Logic
+
+        #region Flow
+
+        private void StartGame()
+        {
+            if (!_deckCreated)
+            {
+                _deck = CreateDeck();
+                CreateCardPanels();
+                _deckCreated = true;
+
+                CardPanel[] allCardPanels = GetAllCardPanels();
+
+                foreach (CardPanel cPanel in allCardPanels)
+                {
+                    //Controls.Add(_cardPanels[i]);
+                    pnlPlayArea.Controls.Add(cPanel);
+                    cPanel.BringToFront();
+
+                    cPanel.UpdateLocation += MoveCardToLocation;
+                    cPanel.MouseDown += CardPanelMouseDown;
+                    cPanel.MouseUp += CardPanelMouseUp;
+                    cPanel.MouseMove += MouseMoved;
+                    cPanel.Size = CardSize;
+                    cPanel.BackgroundImageLayout = ImageLayout.Stretch;
+                }
+            }
+
+            _gameTimer.Stop();
+
+            _heldCardPanel = null;
+            SetupCards();
+            Moves = 0;
+            TimePassed = 0;
+            Score = 0;
+            btnStart.Text = "Restart";
+
+            _gameTimer.Start();
+        }
+
+        private void GameWin()
+        {
+            _gameTimer.Stop();
+            btnStart.Text = "Play Again?";
+        }
+
+        private void MoveMade(Spot oldSpot, Spot newSpot)
+        {
+            //updates score depending on move
+            switch (oldSpot.GetPile())
+            {
+                case Card.Pile.Waste:
+                    if (newSpot.GetPile() == Card.Pile.Tableau)
+                    {
+                        Score += 5;
+                    }
+                    else if (newSpot.GetPile() == Card.Pile.Foundation)
+                    {
+                        Score += 15;
+                    }
+
+                    break;
+                case Card.Pile.Tableau:
+                    if (newSpot.GetPile() == Card.Pile.Foundation)
+                    {
+                        Score += 10;
+                    }
+
+                    break;
+                case Card.Pile.Foundation:
+                    if (newSpot.GetPile() == Card.Pile.Tableau)
+                    {
+                        Score -= 10;
+                    }
+
+                    break;
+            }
+
+            //checks if game has been won (all cards in tableau revealed
+            bool gameWin = true;
+            foreach (Card c in _deck)
+            {
+                if (c.GetSpot().GetPile() == Card.Pile.Tableau && c.GetFaceDown())
+                {
+                    gameWin = false;
+                    break;
+                }
+            }
+
+            if (gameWin)
+            {
+                GameWin();
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Returns the <see cref="Card"/> which has matching <see cref="Spot"/>, or if no matching card then returns null.
@@ -531,7 +631,12 @@ namespace Solitaire
             return result;
         }
 
-        private void CardDroppedByPlayer(ref CardPanel cardPanelMoved)
+        /// <summary>
+        /// Updates a <see cref="Card"/>'s <see cref="Spot"/> if it was dropped in a valid place to move to.
+        /// </summary>
+        /// <param name="cardPanelMoved">The card panel that has been moved.</param>
+        /// <param name="isFollower">Will only add one to the <see cref="Moves"/> counter if this is false.</param>
+        private void CardDroppedByPlayer(ref CardPanel cardPanelMoved, bool isFollower)
         {
             List<Spot> possibleSpots = GeneratePossibleSpots(cardPanelMoved.GetCard());
             bool invalidDrop = true;
@@ -551,13 +656,21 @@ namespace Solitaire
                             Spot oldSpot = cardPanelMoved.GetCard().GetSpot();
                             cardPanelMoved.GetCard().SetSpot(s);
                             invalidDrop = false;
-
+                            
+                            //adds one move if top of cards being moved
+                            if (!isFollower)
+                            {
+                                Moves += 1;
+                            }
+                            
                             Card topOfOldSpot = FindTopCardInPile(oldSpot);
                             if (topOfOldSpot.GetSpot().GetPile() == Card.Pile.Tableau && !topOfOldSpot.IsMarker)
                             {
                                 //reveals card under card moved
                                 topOfOldSpot.SetFaceUp();
                             }
+
+                            MoveMade(oldSpot, s);
 
                             break;
                         }
@@ -570,6 +683,7 @@ namespace Solitaire
                 cardPanelMoved.UpdateLocation(cardPanelMoved, null);
             }
         }
+
 
         private CardPanel? FindCardPanelByCard(Card searchCard)
         {
@@ -603,36 +717,61 @@ namespace Solitaire
             return null;
         }
 
+        #region Scoring
+
+        private readonly Timer _gameTimer = new Timer();
+        private int _time;
+        private int _score;
+        private int _moves;
+
+        private int TimePassed
+        {
+            get => _time;
+            set
+            {
+                _time = value;
+                TimeSpan totalTimeSpan = TimeSpan.FromSeconds(_time);
+                lblTimer.Text = totalTimeSpan.ToString("hh':'mm':'ss");
+            }
+        }
+
+        private int Score
+        {
+            get => _score;
+            set
+            {
+                _score = value;
+
+                //score cannot go negative
+                if (_score < 0)
+                {
+                    _score = 0;
+                }
+
+                lblScore.Text = "Score: " + _score;
+            }
+        }
+
+        private int Moves
+        {
+            get => _moves;
+            set
+            {
+                _moves = value;
+                lblMoves.Text = "Moves: " + _moves;
+            }
+        }
+
+        private void TimerTicked(object sender, EventArgs e)
+        {
+            TimePassed += 1;
+        }
+
         #endregion
 
-        private void StartGame()
-        {
-            if (!_deckCreated)
-            {
-                _deck = CreateDeck();
-                CreateCardPanels();
-                _deckCreated = true;
+        #endregion
 
-                CardPanel[] allCardPanels = GetAllCardPanels();
-
-                foreach (CardPanel cPanel in allCardPanels)
-                {
-                    //Controls.Add(_cardPanels[i]);
-                    pnlPlayArea.Controls.Add(cPanel);
-                    cPanel.BringToFront();
-
-                    cPanel.UpdateLocation += MoveCardToLocation;
-                    cPanel.MouseDown += CardPanelMouseDown;
-                    cPanel.MouseUp += CardPanelMouseUp;
-                    cPanel.MouseMove += MouseMoved;
-                    cPanel.Size = CardSize;
-                    cPanel.BackgroundImageLayout = ImageLayout.Stretch;
-                }
-            }
-            
-            _heldCardPanel = null;
-            SetupCards();
-        }
+        
 
 
         private void BtnStart_Click(object sender, EventArgs e)

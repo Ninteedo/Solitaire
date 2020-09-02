@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormGame));
             this.tblLayout = new System.Windows.Forms.TableLayoutPanel();
             this.pnlPlayArea = new System.Windows.Forms.Panel();
             this.tblScoring = new System.Windows.Forms.TableLayoutPanel();
@@ -51,10 +52,10 @@
             this.tblLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tblLayout.Location = new System.Drawing.Point(0, 0);
             this.tblLayout.Name = "tblLayout";
-            this.tblLayout.RowCount = 3;
+            this.tblLayout.RowCount = 2;
             this.tblLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tblLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
-            this.tblLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tblLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tblLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tblLayout.Size = new System.Drawing.Size(1578, 844);
             this.tblLayout.TabIndex = 0;
             // 
@@ -65,7 +66,7 @@
             this.pnlPlayArea.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlPlayArea.Location = new System.Drawing.Point(3, 45);
             this.pnlPlayArea.Name = "pnlPlayArea";
-            this.pnlPlayArea.Size = new System.Drawing.Size(1572, 595);
+            this.pnlPlayArea.Size = new System.Drawing.Size(1572, 796);
             this.pnlPlayArea.TabIndex = 0;
             // 
             // tblScoring
@@ -142,11 +143,12 @@
             this.BackColor = System.Drawing.Color.Green;
             this.ClientSize = new System.Drawing.Size(1578, 844);
             this.Controls.Add(this.tblLayout);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(1600, 900);
             this.MinimumSize = new System.Drawing.Size(1600, 900);
             this.Name = "FormGame";
-            this.Text = "FormGame";
+            this.Text = "Solitaire";
             this.tblLayout.ResumeLayout(false);
             this.tblScoring.ResumeLayout(false);
             this.tblScoring.PerformLayout();
